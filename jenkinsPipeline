@@ -1,0 +1,57 @@
+pipeline {
+    environment {
+        registry = "meetgoswami/scientific_calculator"
+        registryCredential = 'docker_cred'
+        dockerImage = 'calc_1'
+    }
+    agent any
+
+    stages {
+        stage('Step 1: Git clone') {
+            steps {
+                git 'https://github.com/MeetGoswami/ScientificCalculator.git'
+            }
+        }
+        stage('Step2 : Maven Build') {
+            steps {
+                sh 'mvn clean test'
+            }
+        }
+        stage('Step3 : Maven install'){
+            steps{
+                sh 'mvn install'
+            }
+        }
+        stage('Building our image') {
+            steps{
+                
+                script {
+                    dockerImage = docker.build registry + ":$dockerImage"
+                }
+            
+                
+            }
+        }
+        stage('Deploy our image') {
+            steps{
+                script {
+                    docker.withRegistry( '', registryCredential ) {
+                        dockerImage.push()  
+                    }
+                }
+            }
+        }
+        stage('Cleaning up') {
+            steps{
+                sh "docker rmi $registry:$dockerImage"
+            }
+        }
+        stage('Ansible Deploy') {
+            steps {
+                //Ansible Deploy to remote server (managed host)
+                ansiblePlaybook colorized: true, disableHostKeyChecking: true, installation: 'Ansible', inventory: 'inventory_vm', playbook: 'calc-deploy.yml'
+
+            }
+        }
+    }
+}

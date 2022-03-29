@@ -9,5 +9,5 @@
     - name: pull docker image
       shell: docker pull meetgoswami/scientific_calculator:calc_1
     - name: running container
-      shell: gnome-terminal --window-with-profile=myprofile -- "bash -c 'echo "Hello World"'"
+      shell: docker run -it -d meetgoswami/scientific_calculator:calc_1
     

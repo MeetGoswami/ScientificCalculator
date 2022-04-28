@@ -39,8 +39,6 @@ public class Calculator {
         }
         catch(ArithmeticException e) {
             System.out.println("[EXCEPTION - LOG]"+e.getLocalizedMessage());
-
-
         }
         logger.info("RESULT:NATURAL LOGARITHM("+x+") = "+loge_ans);
         return loge_ans;
